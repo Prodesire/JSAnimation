@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Event Demo</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script>
+    window.onload = function(){
+        var canvas = document.getElementById('canvas');
+        canvas.addEventListener('mousedown', function (event) {
+            console.log("mouse down");
+        }, false);
+
+        canvas.addEventListener('mouseup', function (event) {
+            console.log("mouse up");
+        }, false);
+    };
+</script>
+</body>
+</html>
