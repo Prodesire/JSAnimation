@@ -1,10 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+    <meta charset="utf-8">
+    <title>Drawing App</title>
+    <link rel="stylesheet" href="../include/style.css">
 </head>
 <body>
-$END$
+<canvas id="canvas" width="400" height="400"></canvas>
+<script src="../include/utils.js"></script>
+<script>
+    window.onload = function(){
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            mouse = utils.captureMouse(canvas);
+
+        function onMouseMove() {
+            context.lineTo(mouse.x, mouse.y);
+            context.stroke();
+        }
+
+        canvas.addEventListener('mousedown', function () {
+            context.beginPath();
+            context.moveTo(mouse.x, mouse.y);
+            canvas.addEventListener('mousemove', onMouseMove, false);
+        }, false);
+
+        canvas.addEventListener('mouseup', function () {
+            canvas.removeEventListener('mousemove', onMouseMove, false);
+        }, false);
+    };
+</script>
 </body>
 </html>
