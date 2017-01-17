@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+    <title>Curve</title>
+<link rel="stylesheet" href="../include/style.css">
+    </head>
+    <body>
+    <canvas id="canvas" width="800" height="400"></canvas>
+    <script src="../include/utils.js"></script>
+<script>
+window.onload = function(){
+    var canvas = document.getElementById('canvas'),
+        context = canvas.getContext('2d'),
+        angle = 0,
+        range = 50,
+        centerY = canvas.height / 2,
+        yspeed = 0.05,
+        xpos = 0,
+        ypos = centerY;
+
+    context.lineWidth = 2;
+
+    (function drawFrame () {
+        window.requestAnimationFrame(drawFrame, canvas);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        context.beginPath();
+        context.moveTo(0, centerY);
+
+        for (var x = 0; x < canvas.width; x++) {
+            xpos = x;
+            ypos = centerY + Math.sin(angle + x*0.05) * range;
+            context.lineTo(xpos, ypos);
+        }
+        context.stroke();
+
+        angle += yspeed;
+    }());
+};
+</script>
+</body>
+</html>
