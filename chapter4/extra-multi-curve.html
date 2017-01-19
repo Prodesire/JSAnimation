@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Extra Multi Curves</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="800" height="800"></canvas>
+<script>
+    function Curve (width, height) {
+        this.width = width;
+        this.height = height;
+        this.range = 300;
+        this.init_points = [];
+        for (var i=0; i<5; i++) {
+            this.init_points.push({
+                x: -width / 2 + 100 + (width-200) / 5.0 * i,
+                y: Math.random() * (Math.random() > 0.5 ? 1 : -1) * this.range,
+                range: Math.random() * 200
+            });
+        }
+        this.points = [];
+    }
+
+    Curve.prototype.draw = function (context, angleX, angleY) {
+        points = [];
+        for (var i=0; i<this.init_points.length; i++) {
+            points.push({
+                x: this.init_points[i].x,
+                y: this.init_points[i].y + Math.sin(angleY*1.5 + Math.PI/this.init_points.length*i) * this.init_points[i].range
+            });
+        }
+        ctrlPoint1 = {
+            x: points[0].x * 1.1,
+            y: points[0].y
+        };
+
+        context.save();
+        context.translate(this.width/2, this.height/2);
+        context.rotate(Math.cos(angleY)*Math.PI);
+        context.translate(Math.sin(angleX) * this.range, Math.cos(angleY) * this.range);
+        context.beginPath();
+        context.moveTo(ctrlPoint1.x, ctrlPoint1.y);
+
+        for (i=0; i<points.length-1; i++) {
+            ctrlPoint = {
+                x: (points[i].x + points[i+1].x) / 2,
+                y: (points[i].y + points[i+1].y) / 2
+            };
+            context.quadraticCurveTo(points[i].x, points[i].y , ctrlPoint.x, ctrlPoint.y);
+        }
+
+        context.stroke();
+        context.restore();
+    };
+</script>
+<script>
+    window.onload = function(){
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            curve = new Curve(canvas.width, canvas.height),
+            angleX = 0,
+            angleY = 0,
+            speedX = 0.02,
+            speedY = 0.03;
+
+
+        (function drawFrame () {
+            window.requestAnimationFrame(drawFrame, canvas);
+//            context.clearRect(0, 0, canvas.width, canvas.height);
+            angleX += speedX;
+            angleY += speedY;
+            curve.draw(context, angleX, angleY);
+        }());
+    };
+</script>
+</body>
+</html>
