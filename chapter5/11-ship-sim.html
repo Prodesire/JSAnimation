@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Ship sim</title>
+    <link rel="stylesheet" href="../include/style.css">
+    <style >
+        #canvas {
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script src="../include/utils.js"></script>
+<script src="../extra/keycode.js"></script>
+<script src="ship.js"></script>
+<script>
+    window.onload = function(){
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            ship = new Ship(),
+            vr = 0,
+            vx = 0,
+            vy = 0,
+            thrust = 0;
+
+        ship.x = canvas.width / 2;
+        ship.y = canvas.height / 2;
+
+        window.addEventListener('keydown', function (event) {
+            switch (event.keyCode) {
+                case keycode.LEFT:
+                    vr = -1;
+                    break;
+                case keycode.RIGHT:
+                    vr = 1;
+                    break;
+                case keycode.UP:
+                    thrust = 0.05;
+                    break;
+            }
+        }, false);
+
+        window.addEventListener('keyup', function () {
+            vr = 0;
+            thrust = 0;
+            ship.showFlame = false;
+        }, false);
+
+        (function drawFrame() {
+            window.requestAnimationFrame(drawFrame, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            ship.rotation +=  vr * Math.PI / 180;
+            var angle = ship.rotation,
+                ax = Math.cos(angle) * thrust,
+                ay = Math.sin(angle) * thrust;
+            vx += ax;
+            vy += ay;
+            ship.x += vx;
+            ship.y += vy;
+            ship.draw(context);
+        }());
+
+    };
+</script>
+</body>
+</html>
