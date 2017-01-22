@@ -11,7 +11,7 @@
     function Curve (width, height) {
         this.width = width;
         this.height = height;
-        this.range = 300;
+        this.range = 200;
         this.init_points = [];
         for (var i=0; i<5; i++) {
             this.init_points.push({
@@ -38,7 +38,7 @@
 
         context.save();
         context.translate(this.width/2, this.height/2);
-        context.rotate(Math.cos(angleY)*Math.PI);
+        context.rotate(Math.cos(angleY)*Math.PI*0.4);
         context.translate(Math.sin(angleX) * this.range, Math.cos(angleY) * this.range);
         context.beginPath();
         context.moveTo(ctrlPoint1.x, ctrlPoint1.y);
@@ -62,8 +62,8 @@
             curve = new Curve(canvas.width, canvas.height),
             angleX = 0,
             angleY = 0,
-            speedX = 0.02,
-            speedY = 0.03;
+            speedX = 0.01,
+            speedY = 0.015;
 
 
         (function drawFrame () {
