@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Extra Grid Balls</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script src="../include/utils.js"></script>
+<script src="../include/ball.js"></script>
+<script src="./grid.js"></script>
+<script>
+    window.onload = function(){
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            mouse = utils.captureMouse(canvas),
+            grid = new Grid(canvas.width, canvas.height, 10),
+            originX=canvas.width / 2, originY=canvas.height / 2,
+            oldX=0, oldY=0,
+            deltaX=0, deltaY=0,
+            numBalls = 5,
+            balls = [],
+            balls_delta_pos = [];
+
+        for (var ball, i = 0; i < numBalls; i++) {
+            ball = new Ball(Math.random() * 30 +10, Math.random() * 0xffffff);
+            balls.push(ball);
+            balls_delta_pos.push({
+                delta_x: (Math.random() > 0.5? 1: -1) * Math.random()*100,
+                delta_y: (Math.random() > 0.5? 1: -1) * Math.random()*100
+            });
+        }
+
+        canvas.addEventListener('mousedown', function () {
+            oldX = mouse.x;
+            oldY = mouse.y;
+            canvas.addEventListener('mouseup', onMouseUp, false);
+            canvas.addEventListener('mousemove', onMouseMove, false);
+        }, false);
+
+        function onMouseUp () {
+            originX += deltaX;
+            originY += deltaY;
+            deltaX=0;
+            deltaY=0;
+            canvas.removeEventListener('mouseup', onMouseUp, false);
+            canvas.removeEventListener('mousemove', onMouseMove, false);
+        }
+
+        function onMouseMove () {
+            deltaX = mouse.x - oldX;
+            deltaY = mouse.y - oldY;
+        }
+
+        (function drawFrame () {
+            window.requestAnimationFrame(drawFrame, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            grid.draw(context, originX+deltaX, originY+deltaY);
+
+            for (i = 0; i < numBalls; i++) {
+                ball = balls[i];
+                ball.x = originX + deltaX + balls_delta_pos[i].delta_x;
+                ball.y = originY + deltaY + balls_delta_pos[i].delta_y;
+                ball.draw(context);
+            }
+        }());
+    };
+</script>
+</body>
+</html>
