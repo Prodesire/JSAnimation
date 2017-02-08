@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Extra Coordinatometer</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script src="../include/utils.js"></script>
+<script src="../extra/keycode.js"></script>
+<script src="./coordinatometer.js"></script>
+<script>
+    window.onload = function(){
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            coordinatometer = new Coordinatometer(canvas.width, canvas.height, 10),
+            x=0,
+            vx = 0,
+            friction = 1;
+
+        window.addEventListener('keydown', function (event) {
+            friction = 1;
+            switch (event.keyCode) {
+                case keycode.LEFT:
+                    vx = -5;
+                    break;
+                case keycode.RIGHT:
+                    vx = 5;
+                    break;
+                case keycode.UP:
+                    thrust = 0.05;
+                    break;
+            }
+        }, false);
+
+        window.addEventListener('keyup', function () {
+            friction = 0.98;
+        }, false);
+
+        (function drawFrame () {
+            window.requestAnimationFrame(drawFrame, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.abs(vx) > 0.01) {
+                vx *= friction;
+                x += vx;
+            } else {
+                vx = 0;
+            }
+            coordinatometer.draw(context, x);
+        }());
+    };
+</script>
+</body>
+</html>
