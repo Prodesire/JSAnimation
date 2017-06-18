@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Extra Multi Curves</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="800" height="800"></canvas>
+<script>
+    function Triangle (angle) {
+        this.width = 800;
+        this.height = 800;
+        this.angle = 0;
+        this.scale = 3;
+        this.hsl = 0;
+    }
+
+    Triangle.prototype.draw = function (context) {
+        this.angle += Math.PI / 20;
+        this.scale *= 0.976;
+        this.hsl += 5;
+        hsl = "hsl(" + this.hsl + ",70%, 70%)";
+        context.save();
+        context.strokeStyle = hsl;
+        context.fillStyle = hsl;
+        context.translate(this.width/2, this.height/2);
+        context.rotate(this.angle);
+        context.scale(this.scale, this.scale);
+        context.beginPath();
+        context.moveTo(0,0);
+        context.lineTo(100,280);
+        context.lineTo(200,300);
+        context.closePath();
+        context.fill();
+        context.stroke();
+        context.restore();
+    };
+</script>
+<script>
+    var canvas = document.getElementById('canvas'),
+        context = canvas.getContext('2d'),
+        triangle = new Triangle();
+    for (var i = 0; i < 300; i++){
+        triangle.draw(context);
+    }
+</script>
+</body>
+</html>
