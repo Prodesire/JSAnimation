@@ -1,9 +1,11 @@
-function Ball (radius, color) {
-    if (radius === undefined) { radius = 40; }
+function Box (width, height, color) {
+    if (width === undefined) { width = 50; }
+    if (height === undefined) { height = 50; }
     if (color === undefined) { color = "#ffaaaa"; }
     this.x = 0;
     this.y = 0;
-    this.radius = radius;
+    this.width = width;
+    this.height = height;
     this.vx = 0;
     this.vy = 0;
     this.rotation = 0;
@@ -13,7 +15,7 @@ function Ball (radius, color) {
     this.lineWidth = 1;
 }
 
-Ball.prototype.draw = function (context) {
+Box.prototype.draw = function (context) {
     context.save();
     context.translate(this.x, this.y);
     context.rotate(this.rotation);
@@ -21,21 +23,11 @@ Ball.prototype.draw = function (context) {
     context.lineWidth = this.lineWidth;
     context.fillStyle = this.color;
     context.beginPath();
-    // x, y, radius, start_angle, end_angle, anti-clockwise
-    context.arc(0, 0, this.radius, 0, (Math.PI * 2), true);
+    context.rect(0, 0, this.width, this.height);
     context.closePath();
     context.fill();
     if (this.lineWidth > 0) {
         context.stroke();
     }
     context.restore();
-};
-
-Ball.prototype.getBounds = function () {
-    return {
-        x: this.x - this.radius,
-        y: this.y - this.radius,
-        width: this.radius * 2,
-        height: this.radius * 2
-    };
 };

@@ -61,6 +61,18 @@ utils.captureTouch = function (element) {
     return touch;
 };
 
+utils.intersects = function (rectA, rectB) {
+    return !(rectA.x + rectA.width < rectB.x ||
+            rectA.y + rectA.height < rectB.y ||
+            rectB.x + rectB.width < rectA.x ||
+            rectB.y + rectB.height < rectA.y);
+};
+
+utils.containsPoint = function (rect, x, y) {
+    return !(x < rect.x || x > rect.x + rect.width ||
+             y < rect.y || y > rect.y + rect.height);    
+};
+
 utils.parseColor = function (color, toNumber) {
     if (toNumber === true) {
         if (typeof color === 'number') {
@@ -94,9 +106,4 @@ utils.colorToRGB = function (color, alpha) {
     } else {
         return "rgba(" + r + "," + g + "," + b + "," + a + ")";
     }
-};
-
-utils.containsPoint = function (rect, x, y) {
-    return !(x < rect.x || x > rect.x + rect.width ||
-             y < rect.y || y > rect.y + rect.height);    
 };
