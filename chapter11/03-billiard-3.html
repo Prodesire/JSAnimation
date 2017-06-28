@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Billiard 3</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="400", height="400"></canvas>
+<script src="../include/utils.js"></script>
+<script src="../include/ball.js"></script>
+<script>
+    window.onload = function () {
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            ball1 = new Ball(80),
+            ball2 = new Ball(40),
+            bounce = -1;
+        
+        ball1.mass = 2;
+        ball1.x = canvas.width - 200;
+        ball1.y = canvas.height - 200;
+        ball1.vx = Math.random() * 10 - 5;
+        ball1.vy = Math.random() * 10 - 5;
+
+        ball2.mass = 1;
+        ball2.x = 100;
+        ball2.y = 100;
+        ball2.vx = Math.random() * 10 - 5;
+        ball2.vy = Math.random() * 10 - 5;
+
+        function checkCollision(ball1, ball2) {
+            var dx = ball2.x - ball1.x,
+                dy = ball2.y - ball1.y,
+                dist = Math.sqrt(dx * dx, dy * dy);
+            
+            if (dist < ball1.radius + ball2.radius) {
+                var angle = Math.atan2(dy, dx),
+                    sin = Math.sin(angle),
+                    cos = Math.cos(angle),
+                    x1 = 0,
+                    y1 = 0,
+                    x2 = dx * cos + dy * sin,
+                    y2 = dy * cos - dx * sin,
+                    vx1 = ball1.vx * cos + ball1.vy * sin,
+                    vy1 = ball1.vy * cos - ball1.vx * sin,
+                    vx2 = ball2.vx * cos + ball2.vy * sin,
+                    vy2 = ball2.vy * cos - ball2.vx * sin,
+                vxTotal = vx1 - vx2;
+                vx1 = ((ball1.mass - ball2.mass) * vx1 + 2 * ball2.mass * vx2) / (ball1.mass + ball2.mass);
+                vx2 = vxTotal + vx1;
+                x1 += vx1;
+                x2 += vx2;
+
+                var x1Final = x1 * cos - y1 * sin,
+                    y1Final = y1 * cos + x1 * sin,
+                    x2Final = x2 * cos - y2 * sin,
+                    y2Final = y2 * cos + x2 * sin;
+                
+                ball2.x = ball1.x + x2Final;
+                ball2.y = ball1.y + y2Final;
+                ball1.x = ball1.x + x1Final;
+                ball1.y = ball1.y + y1Final;
+
+                ball1.vx = vx1 * cos - vy1 * sin;
+                ball1.vy = vy1 * cos + vx1 * sin;
+                ball2.vx = vx2 * cos - vy2 * sin;
+                ball2.vy = vy2 * cos + vx2 * sin;
+            }
+        }
+
+        function checkWalls(ball) {
+            
+            if (ball.x + ball.radius > canvas.width) {
+                ball.x = canvas.width - ball.radius;
+                ball.vx *= bounce;
+            } else if (ball.x - ball.radius < 0) {
+                ball.x = ball.radius;
+                ball.vx *= bounce;
+            }
+            if (ball.y + ball.radius > canvas.height) {
+                ball.y = canvas.height - ball.radius;
+                ball.vy *= bounce;
+            } else if (ball.y - ball.radius < 0) {
+                ball.y = ball.radius;
+                ball.vy *= bounce;
+            }
+        }
+
+        (function drawFrame () {
+            window.requestAnimationFrame(drawFrame, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            ball1.x += ball1.vx;
+            ball1.y += ball1.vy;
+            ball2.x += ball2.vx;
+            ball2.y += ball2.vy;
+
+            checkCollision(ball1, ball2);
+            checkWalls(ball1);
+            checkWalls(ball2);
+
+            ball1.draw(context);
+            ball2.draw(context);
+        }());
+    }
+</script>
+</body>
+</html>
