@@ -6,6 +6,7 @@ function Ball (radius, color) {
     this.radius = radius;
     this.vx = 0;
     this.vy = 0;
+    this.mass = this.radius * this.radius;
     this.rotation = 0;
     this.scaleX = 1;
     this.scaleY = 1;

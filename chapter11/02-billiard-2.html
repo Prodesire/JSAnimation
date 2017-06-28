@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Billiard 2</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="400", height="400"></canvas>
+<script src="../include/utils.js"></script>
+<script src="../include/ball.js"></script>
+<script>
+    window.onload = function () {
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            ball1 = new Ball(),
+            ball2 = new Ball();
+        
+        ball1.x = 50;
+        ball1.y = canvas.height / 2;
+        ball1.vx = 1;
+        ball1.mass = 2;
+
+        ball2.x = 350;
+        ball2.y = canvas.height / 2;
+        ball2.vx = -1; 
+        ball2. mass = 1,
+        ball2.color = '#ff00ff';
+
+        (function drawFrame () {
+            window.requestAnimationFrame(drawFrame, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            ball1.x += ball1.vx;
+            ball2.x += ball2.vx;
+
+            if (Math.abs(ball2.x - ball1.x) < (ball1.radius + ball2.radius)) {
+                var vxTotal = ball2.vx - ball1.vx;
+                ball1.vx = ((ball1.mass - ball2.mass) * ball1.vx + 2 * ball2.mass *ball2.vx) / 
+                          (ball1.mass + ball2.mass),
+                ball2.vx = vxTotal - ball1.vx;
+
+                ball1.x += ball1.vx;
+                ball2.x += ball2.vx;
+            }
+
+            ball1.draw(context);
+            ball2.draw(context);
+        }());
+    }
+</script>
+</body>
+</html>
