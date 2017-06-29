@@ -12,3 +12,4 @@ This is the example code and book exercises from *Foundation HTML5 Animation wit
 * How to handle user interactions via the keyboard, mouse, and touchscreen.
 * Advanced motion techniques like springs, coordinate rotation, conservation of momentum, and forward and inverse kinematics.
 * All the basic 3D concepts you'll need for 3D in HTML5 (without WebGL)—from simple perspective to full 3D solids, complete with backface culling and dynamic lighting.
+
