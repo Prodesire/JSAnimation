@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Multi Billiard 1</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="800", height="800"></canvas>
+<script src="../include/utils.js"></script>
+<script src="../include/ball.js"></script>
+<script>
+    window.onload = function () {
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            balls = [],
+            numBalls = 8,
+            bounce = -1.0;
+
+        for (var radius, ball, i = 0; i < numBalls; i ++) {
+          radius = Math.random() * 20 + 15;
+          ball = new Ball(radius);
+          ball.x = i * 80 + 40;
+          ball.y = i * 80 + 40;
+          ball.vx = Math.random() * 10 - 5;
+          ball.vy = Math.random() * 10 - 5;
+          balls.push(ball);
+        }
+
+      function rotate (x, y, sin, cos, reverse) {
+        return {
+          x: (reverse) ? (x * cos + y * sin) : (x * cos - y * sin),
+          y: (reverse) ? (y * cos - x * sin) : (y * cos + x * sin)
+        };
+      }
+
+      function checkCollision (ball1, ball2) {
+        var dx = ball2.x - ball1.x,
+            dy = ball2.y - ball1.y,
+            dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < ball1.radius + ball2.radius) {
+          var angle = Math.atan2(dy, dx),
+              sin = Math.sin(angle),
+              cos = Math.cos(angle),
+              pos1 = {x: 0, y: 0},
+              pos2 = rotate(dx, dy, sin, cos, true),
+              vel1 = rotate(ball1.vx, ball1.vy, sin, cos, true),
+              vel2 = rotate(ball2.vx, ball2.vy, sin, cos, true),
+              vxTotal = vel1.x - vel2.x;
+          vel1.x = ((ball1.mass - ball2.mass) * vel1.x + 2 * ball2.mass * vel2.x) / (ball1.mass + ball2.mass);
+          vel2.x = vxTotal + vel1.x;
+          pos1.x += vel1.x;
+          pos2.x += vel2.x;
+
+          var pos1Final = rotate(pos1.x, pos1.y, sin, cos, false),
+              pos2Final = rotate(pos2.x, pos2.y, sin, cos, false);
+
+          ball2.x = ball1.x + pos2Final.x;
+          ball2.y = ball1.y + pos2Final.y;
+          ball1.x = ball1.x + pos1Final.x;
+          ball1.y = ball1.y + pos1Final.y;
+
+          var vel1Final = rotate(vel1.x, vel1.y, sin, cos, false),
+                    vel2Final = rotate(vel2.x, vel2.y, sin, cos, false);
+                ball1.vx = vel1Final.x;
+                ball1.vy = vel1Final.y;
+                ball2.vx = vel2Final.x;
+                ball2.vy = vel2Final.y;
+        }
+      }
+
+      function checkWalls (ball) {
+        if (ball.x + ball.radius > canvas.width) {
+          ball.x = canvas.width - ball.radius;
+          ball.vx *= bounce;
+        } else if (ball.x - ball.radius < 0) {
+          ball.x = ball.radius;
+          ball.vx *= bounce;
+        }
+        if (ball.y + ball.radius > canvas.height) {
+          ball.y = canvas.height - ball.radius;
+          ball.vy *= bounce;
+        } else if (ball.y - ball.radius < 0) {
+          ball.y = ball.radius;
+          ball.vy *= bounce;
+        }
+      }
+
+      function move(ball) {
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+        checkWalls(ball);
+      }
+
+      function draw(ball) {
+        ball.draw(context);
+      }
+      
+      (function drawFrame () {
+        window.requestAnimationFrame(drawFrame, canvas);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+        balls.forEach(move);
+        for (var ballA, i = 0, len=numBalls - 1; i<len;i++) {
+          ballA = balls[i];
+          for (var ballB, j = i+1;j<numBalls;j++){
+            ballB = balls[j];
+            checkCollision(ballA, ballB);
+          }
+        }
+        balls.forEach(draw);
+      }());
+    };
+</script>
+</body>
+</html>
