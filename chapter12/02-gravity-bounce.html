@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Particles Bounce</title>
+    <link rel="stylesheet" href="../include/style.css">
+</head>
+<body>
+<canvas id="canvas" width="400", height="400"></canvas>
+<script src="../include/utils.js"></script>
+<script src="../include/ball.js"></script>
+<script>
+    window.onload = function () {
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            particles = [],
+            numParticles = 30;
+
+        for (var partical, i = 0; i < numParticles; i++) {
+            particle = new Ball(5);
+            particle.x = Math.random() * canvas.width;
+            particle.y = Math.random() * canvas.height;
+            particle.mass = 1;
+            particles.push(particle);
+        }
+
+        function move(partA, i) {
+            partA.x += partA.vx;
+            partA.y += partA.vy;
+
+            for (var partB, j = i + 1; j < numParticles; j++) {
+                partB = particles[j];
+                checkCollision(partA, partB);
+                gravitate(partA, partB);
+            }
+        }
+
+        function checkCollision(partA, partB) {
+            var dx = partB.x - partA.x,
+            dy = partB.y - partA.y,
+            dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < partA.radius + partB.radius) {
+                var angle = Math.atan2(dy, dx),
+                    sin = Math.sin(angle),
+                    cos = Math.cos(angle),
+                    pos1 = {x: 0, y: 0},
+                    pos2 = rotate(dx, dy, sin, cos, true),
+                    vel1 = rotate(partA.vx, partA.vy, sin, cos, true),
+                    vel2 = rotate(partB.vx, partB.vy, sin, cos, true),
+                    vxTotal = vel1.x - vel2.x;
+                vel1.x = ((partA.mass - partB.mass) * vel1.x + 2 * partB.mass * vel2.x) / (partA.mass + partB.mass);
+                vel2.x = vxTotal + vel1.x;
+                pos1.x += vel1.x;
+                pos2.x += vel2.x;
+
+                var pos1Final = rotate(pos1.x, pos1.y, sin, cos, false),
+                    pos2Final = rotate(pos2.x, pos2.y, sin, cos, false);
+
+                partB.x = partA.x + pos2Final.x;
+                partB.y = partA.y + pos2Final.y;
+                partA.x = partA.x + pos1Final.x;
+                partA.y = partA.y + pos1Final.y;
+
+                var vel1Final = rotate(vel1.x, vel1.y, sin, cos, false),
+                    vel2Final = rotate(vel2.x, vel2.y, sin, cos, false);
+                    partA.vx = vel1Final.x;
+                    partA.vy = vel1Final.y;
+                    partB.vx = vel2Final.x;
+                    partB.vy = vel2Final.y;
+            }
+        }
+
+        function rotate (x, y, sin, cos, reverse) {
+            return {
+                x: (reverse) ? (x * cos + y * sin) : (x * cos - y * sin),
+                y: (reverse) ? (y * cos - x * sin) : (y * cos + x * sin)
+            };
+        }
+
+        function gravitate (partA, partB) {
+            var dx = partB.x - partA.x,
+                dy = partB.y - partA.y,
+                distSQ = dx * dx + dy * dy;
+
+            var dist = Math.sqrt(distSQ),
+                force = partA.mass * partB.mass / distSQ,
+                fx = force * dx / dist,
+                fy = force * dy / dist;
+
+            partA.vx += fx / partA.mass;
+            partA.vy += fy / partA.mass;
+            partB.vx -= fx / partA.mass;
+            partB.vy -= fy / partB.mass;
+        }
+
+        function draw (particle) {
+            particle.draw(context);
+        }
+
+        (function drawFrame () {
+            window.requestAnimationFrame(drawFrame, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(move);
+            particles.forEach(draw);
+        }());
+    }
+</script>
+</body>
+</html>
